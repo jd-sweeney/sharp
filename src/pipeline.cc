@@ -682,8 +682,15 @@ class PipelineWorker : public Nan::AsyncWorker {
 
       // Apply Custom ICC
       if (baton->withMetadata && !baton->withMetadataProfile.empty()) {
+        const char* input_profile = profileMap[baton->colourspace] != std::string()
+          ? profileMap[baton->colourspace].data()
+          : profileMap[VIPS_INTERPRETATION_sRGB].data();
+
         image = image.icc_transform(const_cast<char*>(baton->withMetadataProfile.data()),
-          VImage::option()->set("intent", VIPS_INTENT_PERCEPTUAL));
+          VImage::option()
+            ->set("intent", VIPS_INTENT_PERCEPTUAL)
+            ->set("input_profile", const_cast<char*>(input_profile))
+            ->set("embedded", TRUE));
       }
 
       // Override EXIF Orientation tag
