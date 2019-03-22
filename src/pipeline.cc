@@ -680,6 +680,12 @@ class PipelineWorker : public Nan::AsyncWorker {
         }
       }
 
+      // Apply Custom ICC
+      if (baton->withMetadata && !baton->withMetadataProfile.empty()) {
+        image = image.icc_transform(const_cast<char*>(baton->withMetadataProfile.data()),
+          VImage::option()->set("intent", VIPS_INTENT_PERCEPTUAL));
+      }
+
       // Override EXIF Orientation tag
       if (baton->withMetadata && baton->withMetadataOrientation != -1) {
         sharp::SetExifOrientation(image, baton->withMetadataOrientation);
@@ -1275,6 +1281,7 @@ NAN_METHOD(pipeline) {
   baton->fileOut = AttrAsStr(options, "fileOut");
   baton->withMetadata = AttrTo<bool>(options, "withMetadata");
   baton->withMetadataOrientation = AttrTo<uint32_t>(options, "withMetadataOrientation");
+  baton->withMetadataProfile = AttrAsStr(options, "withMetadataProfile");
   // Format-specific
   baton->jpegQuality = AttrTo<uint32_t>(options, "jpegQuality");
   baton->jpegProgressive = AttrTo<bool>(options, "jpegProgressive");

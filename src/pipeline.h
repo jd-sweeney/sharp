@@ -148,6 +148,7 @@ struct PipelineBaton {
   std::string err;
   bool withMetadata;
   int withMetadataOrientation;
+  std::string withMetadataProfile;
   std::unique_ptr<double[]> convKernel;
   int convKernelWidth;
   int convKernelHeight;
@@ -243,6 +244,7 @@ struct PipelineBaton {
     tiffYres(1.0),
     withMetadata(false),
     withMetadataOrientation(-1),
+    withMetadataProfile(""),
     convKernelWidth(0),
     convKernelHeight(0),
     convKernelScale(0.0),
